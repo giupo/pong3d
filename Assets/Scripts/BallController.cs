@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class BallController : MonoBehaviour {
@@ -8,7 +9,7 @@ public class BallController : MonoBehaviour {
 	public GameObject ground;
 	private float ground_z;
 	private Rigidbody rb;
-	private AudioSource audio;
+	private AudioSource audioSource;
 
 	/* Since we are moving WAY too fast, let'see if 
 	http://wiki.unity3d.com/index.php?title=DontGoThroughThings can help
@@ -27,21 +28,32 @@ public class BallController : MonoBehaviour {
 	private Vector3 initialPosition;
 	private Collider myCollider;
 
-
+	public Text counter;
 	// speed
 	private float dspeed = .1f;
-
+	public int warmUpSeconds = 3;
+	private bool isKicking;
+	private float startKicking;
 	void Start () {
-		audio = GetComponent<AudioSource> ();
+		audioSource = GetComponent<AudioSource> ();
 		rb = GetComponent<Rigidbody> ();
 		initialPosition = rb.position;
 	
 		ground_z = ground.GetComponent<Collider>().bounds.size.z / 2;
 
-		Kick ();
+		isKicking = true;
 	}
 
 	void Kick() {
+		rb.velocity = Vector3.zero;
+		counter.enabled = true;
+		counter.text = warmUpSeconds.ToString ();
+		isKicking = true;
+		startKicking = Time.time;
+		transform.position = initialPosition;
+	}
+
+	void Go() {
 		float xmax = 10;
 		float xmin = -xmax;
 		
@@ -63,9 +75,21 @@ public class BallController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
+		if (isKicking) {
+			float elapsed = Time.time - startKicking;
+			counter.text = (warmUpSeconds - ((int)elapsed)).ToString ();
+			if (elapsed < warmUpSeconds) {
+				return;
+			} else {
+				counter.enabled = false;
+				isKicking = false;
+				Go ();
+			}
+		}
+
 		// se la palla s'incastra in orizzontale.
 		if (Mathf.Abs (rb.velocity.z) < 0.01f) {
-			rb.AddForce(new Vector3(0, 0, Random.Range(-10, 10)));
+			rb.AddForce (new Vector3 (0, 0, Random.Range (-10, 10)));
 		}
 
 		bool gameEnded = Mathf.Abs (transform.position.z) > ground_z;
@@ -76,19 +100,19 @@ public class BallController : MonoBehaviour {
 			player.SendMessage ("IncrementScore");
 			transform.position = initialPosition;
 			Kick ();
-		} else {
-			rb.velocity = rb.velocity * 1.003f;
 		}
-		Debug.Log (rb.velocity.magnitude);
 	}
 
 	public void OnCollisionEnter(Collision col) {
-		audio.PlayOneShot (audio.clip);
+		Debug.Log (col.gameObject.tag);
+		if (!col.gameObject.CompareTag ("GroundLines")) {
+			audioSource.PlayOneShot (audioSource.clip);
+		}
 	}
 
 	public void OnCollisionExit(Collision col) {
-		if (col.gameObject.CompareTag ("GroundLines")) {
-			rb.velocity = rb.velocity * 1.5f;
+		if (!col.gameObject.CompareTag ("GroundLines")) {
+			rb.velocity = rb.velocity * 1.2f;
 		}
 	}
 }

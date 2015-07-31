@@ -7,7 +7,7 @@ public class CPUPlayerController : MonoBehaviour {
 	public GameObject ball;
 	public Text scoreLabel;
 	private int score;
-	private float speed;
+	public float speed;
 	public float maxSpeed;
 	public float xp;
 
@@ -18,14 +18,14 @@ public class CPUPlayerController : MonoBehaviour {
 		audio = GetComponent<AudioSource> ();
 		score = 0;
 		xp = 8;
-		speed = 0.5f;
+		speed = 0.8f;
 		maxSpeed = 20f;
 		//rb = GetComponent<Rigidbody> ();
 	}
 
 	void FixedUpdate () {
 		if (speed < maxSpeed) {
-			speed += 0.003f;
+			speed += 0.001f;
 		}
 
 		// usata per capire cosa fa la CPU

@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour {
 	public Text scoreLabel;
 	public float xp = 8f;
 
-	private AudioSource audio;
+	private AudioSource audioSource;
 	void Start () {
-		audio = GetComponent<AudioSource> ();
+		audioSource = GetComponent<AudioSource> ();
 		if (damper == 0.0f) {
 			damper = 1.5f;
 		}
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void IncrementScore() {
-		audio.PlayOneShot (audio.clip);
+		audioSource.PlayOneShot (audioSource.clip);
 		++score;
 		scoreLabel.text = score.ToString ();
 	}
