@@ -8,7 +8,10 @@ public class PlayerController : MonoBehaviour {
 	private int score;
 	public Text scoreLabel;
 	public float xp = 8f;
+
+	private AudioSource audio;
 	void Start () {
+		audio = GetComponent<AudioSource> ();
 		if (damper == 0.0f) {
 			damper = 1.5f;
 		}
@@ -17,14 +20,13 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		Vector3 offset = Vector3.zero;
 		float horizontal = .0f;
 		if (SystemInfo.deviceType == DeviceType.Desktop) {
 			horizontal = Input.GetAxis ("Horizontal");
 		} else {
 			if (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Moved) {
 				Vector2 touchDeltaPosition = Input.GetTouch (0).deltaPosition;
-				horizontal = touchDeltaPosition.x * 5f;
+				horizontal = touchDeltaPosition.x;
 			} else {
 				horizontal = Input.acceleration.x * 5f;
 			}
@@ -42,6 +44,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void IncrementScore() {
+		audio.PlayOneShot (audio.clip);
 		++score;
 		scoreLabel.text = score.ToString ();
 	}

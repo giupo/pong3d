@@ -11,23 +11,24 @@ public class CPUPlayerController : MonoBehaviour {
 	public float maxSpeed;
 	public float xp;
 
-	private Rigidbody rb;
+	//private Rigidbody rb;
+	private AudioSource audio;
 
 	void Start () {
+		audio = GetComponent<AudioSource> ();
 		score = 0;
 		xp = 8;
-		speed = 1.2f;
-		maxSpeed = 50f;
-		rb = GetComponent<Rigidbody> ();
+		speed = 0.5f;
+		maxSpeed = 20f;
+		//rb = GetComponent<Rigidbody> ();
 	}
 
 	void FixedUpdate () {
-		Vector3 position = transform.position;
 		if (speed < maxSpeed) {
-			speed += 0.1f;
+			speed += 0.003f;
 		}
 
-
+		// usata per capire cosa fa la CPU
 		Vector3 ballVelocity = ball.GetComponent<Rigidbody> ().velocity;
 		Vector3 target;
 		if (ballVelocity.z > 0) {
@@ -38,9 +39,8 @@ public class CPUPlayerController : MonoBehaviour {
 			target = Vector3.zero;
 		}
 
-		Vector3 offset = new Vector3( target.x - transform.position.x , 0, 0);
-		Debug.Log (offset.ToString ());
-		transform.Translate (offset * speed * Time.deltaTime);
+		float offset = target.x - transform.position.x;
+		transform.Translate (new Vector3(offset,0,0) * speed * Time.deltaTime);
 
 	 	// controllo per non sconfinare.
 		if (transform.position.x > xp) {
@@ -51,6 +51,7 @@ public class CPUPlayerController : MonoBehaviour {
 	}
 
 	public void IncrementScore() {
+		audio.PlayOneShot (audio.clip);
 		++score;
 		scoreLabel.text = score.ToString ();
 	}

@@ -8,7 +8,7 @@ public class BallController : MonoBehaviour {
 	public GameObject ground;
 	private float ground_z;
 	private Rigidbody rb;
-
+	private AudioSource audio;
 
 	/* Since we are moving WAY too fast, let'see if 
 	http://wiki.unity3d.com/index.php?title=DontGoThroughThings can help
@@ -32,6 +32,7 @@ public class BallController : MonoBehaviour {
 	private float dspeed = .1f;
 
 	void Start () {
+		audio = GetComponent<AudioSource> ();
 		rb = GetComponent<Rigidbody> ();
 		initialPosition = rb.position;
 	
@@ -71,16 +72,23 @@ public class BallController : MonoBehaviour {
 		if (gameEnded) {
 			GameObject player = null;
 			string tag = transform.position.z > ground_z ? "Player" : "CPU Player";
-			player = GameObject.FindGameObjectWithTag(tag);
-			player.SendMessage("IncrementScore");
+			player = GameObject.FindGameObjectWithTag (tag);
+			player.SendMessage ("IncrementScore");
 			transform.position = initialPosition;
-			Kick();
+			Kick ();
+		} else {
+			rb.velocity = rb.velocity * 1.003f;
 		}
+		Debug.Log (rb.velocity.magnitude);
+	}
+
+	public void OnCollisionEnter(Collision col) {
+		audio.PlayOneShot (audio.clip);
 	}
 
 	public void OnCollisionExit(Collision col) {
 		if (col.gameObject.CompareTag ("GroundLines")) {
-			rb.velocity = rb.velocity * 1.05f;
+			rb.velocity = rb.velocity * 1.5f;
 		}
 	}
 }
