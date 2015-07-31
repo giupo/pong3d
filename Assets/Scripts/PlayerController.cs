@@ -22,10 +22,16 @@ public class PlayerController : MonoBehaviour {
 		if (SystemInfo.deviceType == DeviceType.Desktop) {
 			horizontal = Input.GetAxis ("Horizontal");
 		} else {
-			horizontal = Input.acceleration.x * 5f;
+			if (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Moved) {
+				Vector2 touchDeltaPosition = Input.GetTouch (0).deltaPosition;
+				horizontal = touchDeltaPosition.x * 5f;
+			} else {
+				horizontal = Input.acceleration.x * 5f;
+			}
 		}
-		offset.x = horizontal / damper;
-		transform.position = transform.position + offset;
+
+		transform.Translate (new Vector3 (horizontal * 10f, 0, 0) * Time.deltaTime);
+
 		if (transform.position.x > xp) {
 			transform.position = new Vector3 (xp, transform.position.y, transform.position.z);
 		}

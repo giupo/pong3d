@@ -17,6 +17,7 @@ public class CPUPlayerController : MonoBehaviour {
 		score = 0;
 		xp = 8;
 		speed = 1.2f;
+		maxSpeed = 50f;
 		rb = GetComponent<Rigidbody> ();
 	}
 
@@ -28,28 +29,25 @@ public class CPUPlayerController : MonoBehaviour {
 
 
 		Vector3 ballVelocity = ball.GetComponent<Rigidbody> ().velocity;
-		
 		Vector3 target;
 		if (ballVelocity.z > 0) {
 			// vai verso la palla...
-			target = ballVelocity;
+			target = ball.transform.position;
 		} else {
 			// vai verso il centro...
 			target = Vector3.zero;
 		}
 
-		Vector3 offset = position - target; 
-		position.x = position.x - offset.x;
+		Vector3 offset = new Vector3( target.x - transform.position.x , 0, 0);
+		Debug.Log (offset.ToString ());
+		transform.Translate (offset * speed * Time.deltaTime);
 
 	 	// controllo per non sconfinare.
-		if (position.x > xp) {
-			position.x = xp;
-		} else if (position.x < -xp) {
-			position.x = -xp;
+		if (transform.position.x > xp) {
+			transform.position = new Vector3(xp, transform.position.y, transform.position.z);
+		} else if (transform.position.x < -xp) {
+			transform.position = new Vector3(-xp, transform.position.y, transform.position.z);
 		}
-
-		Debug.Log ("Cribbio x = " + position.x.ToString ());
-		transform.position = position;
 	}
 
 	public void IncrementScore() {
