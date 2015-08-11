@@ -2,23 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : AbstractPlayerController {
 
-	public float damper = 0.0f;
-	private int score;
-	public Text scoreLabel;
-	public float xp = 8f;
-
-	private AudioSource audioSource;
-	void Start () {
-		audioSource = GetComponent<AudioSource> ();
-		if (damper == 0.0f) {
-			damper = 1.5f;
-		}
-		this.score = 0;
-	}
-	
-	// Update is called once per frame
 	void FixedUpdate () {
 		float horizontal = .0f;
 		if (SystemInfo.deviceType == DeviceType.Desktop) {
@@ -26,7 +11,7 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			if (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Moved) {
 				Vector2 touchDeltaPosition = Input.GetTouch (0).deltaPosition;
-				horizontal = touchDeltaPosition.x;
+				horizontal = touchDeltaPosition.x/10;
 			} else {
 				horizontal = Input.acceleration.x * 5f;
 			}
@@ -43,9 +28,4 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	public void IncrementScore() {
-		audioSource.PlayOneShot (audioSource.clip);
-		++score;
-		scoreLabel.text = score.ToString ();
-	}
 }

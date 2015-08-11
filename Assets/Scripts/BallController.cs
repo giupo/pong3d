@@ -16,21 +16,13 @@ public class BallController : MonoBehaviour {
 	 */
 
 	public bool sendTriggerMessage = false; 	
-	
-	public LayerMask layerMask = -1; //make sure we aren't in this layer 
-	public float skinWidth = 0.1f; //probably doesn't need to be changed 
-	
 	private float minimumExtent; 
-	//private float partialExtent; 
-	//private float sqrMinimumExtent; 
-	//private Vector3 previousPosition; 
 
 	private Vector3 initialPosition;
 	private Collider myCollider;
 
 	public Text counter;
 	// speed
-	private float dspeed = .1f;
 	public int warmUpSeconds = 3;
 	private bool isKicking;
 	private float startKicking;
@@ -69,8 +61,6 @@ public class BallController : MonoBehaviour {
 		}
 		
 		force.y = .0f;
-		//rb.AddForce(force);
-
 		rb.velocity = force;
 	}
 
@@ -87,6 +77,12 @@ public class BallController : MonoBehaviour {
 			}
 		}
 
+		if (isClamped ()) {
+			Vector3 kick = new Vector3(-transform.position.x, 0, 0);
+			Debug.Log("Kicking ...");
+			rb.AddForce(kick);
+		}
+
 		// se la palla s'incastra in orizzontale.
 		if (Mathf.Abs (rb.velocity.z) < 0.01f) {
 			rb.AddForce (new Vector3 (0, 0, Random.Range (-10, 10)));
@@ -98,6 +94,7 @@ public class BallController : MonoBehaviour {
 			string tag = transform.position.z > ground_z ? "Player" : "CPU Player";
 			player = GameObject.FindGameObjectWithTag (tag);
 			player.SendMessage ("IncrementScore");
+			GameObject.FindGameObjectWithTag("CPU Player").SendMessage("Init");
 			transform.position = initialPosition;
 			Kick ();
 		}
@@ -114,5 +111,10 @@ public class BallController : MonoBehaviour {
 		if (!col.gameObject.CompareTag ("GroundLines")) {
 			rb.velocity = rb.velocity * 1.2f;
 		}
+	}
+
+	bool isClamped() {
+		float x = transform.position.x;
+		return Mathf.Abs (x) > 9 && rb.velocity.x == 0;
 	}
 }

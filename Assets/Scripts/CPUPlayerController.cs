@@ -2,25 +2,19 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class CPUPlayerController : MonoBehaviour {
+public class CPUPlayerController : AbstractPlayerController {
 
 	public GameObject ball;
-	public Text scoreLabel;
 	private int score;
 	public float speed;
 	public float maxSpeed;
-	public float xp;
 
 	//private Rigidbody rb;
-	private AudioSource audio;
+	private Vector3 initialPosition = new Vector3(0f, .5f, 16f);
 
-	void Start () {
-		audio = GetComponent<AudioSource> ();
-		score = 0;
-		xp = 8;
-		speed = 0.8f;
-		maxSpeed = 20f;
-		//rb = GetComponent<Rigidbody> ();
+	void Init() {
+		Debug.Log ("Init : " + transform.position.ToString());
+		transform.position = initialPosition;
 	}
 
 	void FixedUpdate () {
@@ -41,18 +35,12 @@ public class CPUPlayerController : MonoBehaviour {
 
 		float offset = target.x - transform.position.x;
 		transform.Translate (new Vector3(offset,0,0) * speed * Time.deltaTime);
-
+		//transform.rotation = Quaternion.Euler (0, -offset*10, 0);
 	 	// controllo per non sconfinare.
 		if (transform.position.x > xp) {
-			transform.position = new Vector3(xp, transform.position.y, transform.position.z);
+			transform.position = new Vector3(xp, initialPosition.y, initialPosition.z);
 		} else if (transform.position.x < -xp) {
-			transform.position = new Vector3(-xp, transform.position.y, transform.position.z);
+			transform.position = new Vector3(-xp, initialPosition.y, initialPosition.z);
 		}
-	}
-
-	public void IncrementScore() {
-		audio.PlayOneShot (audio.clip);
-		++score;
-		scoreLabel.text = score.ToString ();
 	}
 }
